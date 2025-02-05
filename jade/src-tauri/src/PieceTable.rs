@@ -72,7 +72,17 @@ impl PieceTable {
     }
 
     pub fn get_text(&self) -> String {
+        let mut result = String::new();
 
+        for piece in &self.pieces {
+            let text = match piece.buffer_type {
+                BufferType::Original => &self.original[piece.start..piece.start + piece.length],
+                BufferType::Added => &self.added[piece.start..piece.start + piece.length],
+            };
+            result.push_str(text);
+        }
+
+        result
     }
 
     pub fn get_text_range(&self, start: usize, end: usize) -> String {
