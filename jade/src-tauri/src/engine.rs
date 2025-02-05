@@ -1,10 +1,35 @@
+use std::path::PathBuf;
+use std::time::Duration;
 
 pub enum EngineCommand {
-    Insert { psotion: usize, text: String },
+    Insert { postion: usize, text: String },
     Delete { start: usize, end: usize },
     Save { path: PathBuf },
     Load { path: PathBuf },
     GetMetrics
+}
+
+pub enum EngineError {
+    FileNotFound,
+    InvalidPosition,
+    BufferOverflow,
+    EncodingError,
+    IoError(std::io::Error),  // Wrap standard IO errors
+    LspError(String),         // Language server errors
+    InvalidOperation(String), // For operations that aren't allowed in current state
+}
+
+pub enum EngineStatus {
+    Ready,
+    Loading,
+    Saving,
+    Processing,
+    Error,
+    ShuttingDown,
+    // Could also include specific states:
+    LspConnecting,
+    IndexingFiles,
+    WaitingForResponse,
 }
 
 // Results returned to platform
@@ -13,13 +38,6 @@ pub enum EngineResult {
     TextChanged { new_text: String },
     Metrics(EngineMetrics),
     Error(EngineError),
-}
-
-pub struct TextEngine {
-    buffer_manager: BufferManager,
-    file_system: FileSystem,
-    lsp_client: LspClient,
-    engine_metrics: EngineMetrics,
 }
 
 struct BufferManager {
@@ -35,7 +53,16 @@ struct EngineMetrics {
     buffer_size: usize,
 }
 
-impl EnginMetrics {
+// main engine
+pub struct TextEngine {
+    buffer_manager: BufferManager,
+    file_system: FileSystem,
+    lsp_client: LspClient,
+    engine_metrics: EngineMetrics,
+}
+
+
+impl EngineMetrics {
     pub fn new() -> Self {
 
     }
@@ -47,4 +74,9 @@ impl EnginMetrics {
     pub fn get_status(&self) -> EngineStatus {
         
     }
+}
+
+#[tauri::command]
+async fn execute_engine_command(command: EngineCommand) -> Result<EngineResult, String> {
+    // Bridge between Tauri and engine
 }
