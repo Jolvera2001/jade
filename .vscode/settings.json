@@ -1,0 +1,5 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "C:/LocalProjects/rust/jade/jade/src-tauri/Cargo.toml"
+    ],
+}
