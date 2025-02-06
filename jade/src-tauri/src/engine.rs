@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 use std::time::Duration;
+use piecetable::PieceTable;
 
 pub enum EngineCommand {
     Insert { postion: usize, text: String },
