@@ -43,8 +43,8 @@ pub enum EngineResult {
 
 struct BufferManager {
     current_buffer: PieceTable,  // or whatever buffer implementation
-    encoding: TextEncoding,
-    line_endings: LineEnding,
+    // encoding: TextEncoding,
+    // line_endings: LineEnding,
 }
 
 struct EngineMetrics {
@@ -57,27 +57,27 @@ struct EngineMetrics {
 // main engine
 pub struct TextEngine {
     buffer_manager: BufferManager,
-    file_system: FileSystem,
-    lsp_client: LspClient,
+    // file_system: FileSystem,
+    // lsp_client: LspClient,
     engine_metrics: EngineMetrics,
 }
 
 
-impl EngineMetrics {
-    pub fn new() -> Self {
+// impl EngineMetrics {
+//     pub fn new() -> Self {
 
-    }
+//     }
 
-    pub fn execute_command(&mut self, command: EngineCommand) -> EngineResult {
+//     pub fn execute_command(&mut self, command: EngineCommand) -> EngineResult {
 
-    }
+//     }
 
-    pub fn get_status(&self) -> EngineStatus {
+//     pub fn get_status(&self) -> EngineStatus {
         
-    }
-}
+//     }
+// }
 
-#[tauri::command]
-async fn execute_engine_command(command: EngineCommand) -> Result<EngineResult, String> {
-    // Bridge between Tauri and engine
-}
+// #[tauri::command]
+// async fn execute_engine_command(command: EngineCommand) -> Result<EngineResult, String> {
+//     // Bridge between Tauri and engine
+// }
