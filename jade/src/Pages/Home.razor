@@ -1,34 +1,47 @@
 ﻿@page "/"
-@inject IJSRuntime JsRuntime
+@inject IJSRuntime JS
 
 <main class="container">
-    <h1>Welcome to Tauri + Blazor</h1>
-
-    <div class="row">
-        <a href="https://tauri.app" target="_blank">
-            <img src="img/tauri.svg" class="logo tauri" alt="Tauri logo"/>
-        </a>
-        <a href="https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor" target="_blank">
-            <img src="img/blazor.png" class="logo blazor" alt="Blazor logo"/>
-        </a>
+    <div class="editor">
+        <textarea 
+            @bind="_text"
+            @bind:event="oninput" 
+            @onkeydown="HandleKeyDown" 
+            id="editor-textarea" />
+        <p>@_text</p>
     </div>
-    <p>Click on the Tauri and Blazor logos to learn more.</p>
-
-    <form class="row" @onsubmit="GreetAsync" @onsubmit:preventDefault="true">
-        <input id="greet-input" placeholder="Enter a name..." @bind="GreetInput"/>
-        <button type="submit">Greet</button>
-    </form>
-    <p>@GreetMsg</p>
 </main>
 
 @code
 {
-    private string? GreetInput { get; set; }
+    private string _text = "";
 
-    private string? GreetMsg { get; set; }
-
-    private async Task GreetAsync()
+    private void HandleInput(ChangeEventArgs e) 
     {
-        GreetMsg = await JsRuntime.InvokeAsync<string>("__TAURI__.core.invoke", "greet", new { name = GreetInput });
+        _text = e.Value?.ToString() ?? "";
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs args) 
+    {
+        if (args.Key == "Tab")
+        {
+            _text += "    ";
+        }
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) 
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("eval", @"
+                document.getElementById('editor-textarea').addEventListener('keydown', function(e) {
+                    if (e.key === 'Tab') {
+                        e.preventDefault();
+                    }
+                });
+            ");
+        }
     }
 }
