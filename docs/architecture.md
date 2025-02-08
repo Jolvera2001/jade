@@ -2,13 +2,21 @@
 graph TD
     subgraph TextEditor
         subgraph Platform
-            C#
-            subgraph PluginSystem
-                g[git]
+            subgraph PluginSystemAPI
+                disc[Plugin Discovery]
+                mang[Plugin Management]
+                ui[UI Management]
+                state[State Management]
+                events[Event System]
+            end
+            subgraph Plugins
+                git
+                md[md preview]
                 etc.
             end
-            subgraph UI
-                Blazor
+            subgraph Security
+                perm[Permission System]
+                valid[Plugin Validation]
             end
         end
 
@@ -18,12 +26,16 @@ graph TD
                 f[File IO]
                 e[Editor Actions]
                 l[LSP]
+                cache[Response Cache]
             end
         end
     end
 
-    Platform --> APILayer
-    APILayer --> Platform
-    PluginSystem -->|API Calls| APILayer
-    PluginSystem -->|Provides UI and Functions|UI
+    Platform -->|Tauri Commands| APILayer
+    APILayer -->|State Updates & Events| Platform
+    Plugins -->|API calls| Security
+    Security -->|Validated Calls| PluginSystemAPI
+    PluginSystemAPI -->|Managed Access| Plugins
+    Plugins -->|Inter-plugin Events| events
+    events -->|Broadcast| Plugins
 ```
