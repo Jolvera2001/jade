@@ -59,12 +59,7 @@
             {
                 foreach(var change in e.Changes)
                 {
-                    await Js.InvokeAsync<string>("__TAURI__.invoke", "update_piece_table", new
-                    {
-                        offset = change.RangeOffset,
-                        length = change.RangeLength,
-                        text = change.Text
-                    });
+                    await Js.InvokeAsync<string>("__TAURI__.core.invoke", "update_content", change);
                 }
             }
             catch (Exception ex)
