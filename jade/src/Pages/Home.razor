@@ -1,11 +1,11 @@
 ﻿@page "/"
-@inject IJSRuntime JS
+@inject IJSRuntime Js
 @using BlazorMonaco
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
 
 <main class="h-screen w-screen flex flex-col">
-    <div class="bg-gray-800 p-2">
+    <div class="bg-gray-800">
         <span class="text-white">File: example.txt</span>
     </div>
     <div class="flex-grow">
@@ -13,10 +13,12 @@
             @ref="_editor"
             ConstructionOptions="StandaloneEditorConstructionOptions"
             OnDidChangeCursorPosition="HandleCursorChange"
+            OnDidChangeModelContent="HandleContentChange"
+            OnDidInit="EditorInitialized"
             CssClass="h-full w-full" />
     </div>
     <div class="bg-gray-800 p-2 flex justify-between">
-        <span class="text-white">Line: @_currentLine, Column: @_currentColumn</span>
+        <span class="text-white">@($"Line: {_currentLine}, Column: {_currentColumn}")</span>
         <span class="text-white">UTF-8</span>
         <span class="text-white">Plain Text</span>
     </div>
@@ -33,7 +35,7 @@
         return new StandaloneEditorConstructionOptions 
         {
             AutomaticLayout = true,
-            Language = "plaintext",
+            Language = "markdown",
             Theme = "vs-dark",
             ScrollBeyondLastLine = false,
             LineNumbers = "on",
@@ -49,11 +51,36 @@
         StateHasChanged();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task HandleContentChange(ModelContentChangedEvent e)
     {
-        if (firstRender && _editor != null)
+        if (_editor != null)
         {
-            await _editor.Layout();
+            try
+            {
+                foreach(var change in e.Changes)
+                {
+                    await Js.InvokeAsync<string>("__TAURI__.invoke", "update_piece_table", new
+                    {
+                        offset = change.RangeOffset,
+                        length = change.RangeLength,
+                        text = change.Text
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating piece table: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task EditorInitialized()
+    {
+        if (_editor != null)
+        {
+            await _editor.Layout();    
         }
     }
 }
+using System.Runtime.InteropServices;
+#line default
