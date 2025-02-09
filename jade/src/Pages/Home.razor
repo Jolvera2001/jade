@@ -4,16 +4,29 @@
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
 
-<main class="h-screen w-screen">
+<main class="h-screen w-screen flex flex-col">
+    <div class="bg-gray-800 p-2">
+        <span class="text-white">File: example.txt</span>
+    </div>
+    <div class="flex-grow">
         <StandaloneCodeEditor 
             @ref="_editor"
             ConstructionOptions="StandaloneEditorConstructionOptions"
+            OnDidChangeCursorPosition="HandleCursorChange"
             CssClass="h-full w-full" />
+    </div>
+    <div class="bg-gray-800 p-2 flex justify-between">
+        <span class="text-white">Line: @_currentLine, Column: @_currentColumn</span>
+        <span class="text-white">UTF-8</span>
+        <span class="text-white">Plain Text</span>
+    </div>
 </main>
     
 @code
 {
     private string _text = "";
+    private int _currentLine = 1;
+    private int _currentColumn = 1;
     private StandaloneCodeEditor? _editor;
     private StandaloneEditorConstructionOptions StandaloneEditorConstructionOptions(StandaloneCodeEditor editor) 
     {
@@ -27,6 +40,13 @@
             RenderWhitespace = "all",
             Value = _text,
         };
+    }
+
+    private async Task HandleCursorChange(CursorPositionChangedEvent e)
+    {
+        _currentLine = e.Position.LineNumber;
+        _currentColumn = e.Position.Column;
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -3,4 +3,7 @@
         "C:/LocalProjects/rust/jade/jade/src-tauri/Cargo.toml"
     ],
     "markdown.validate.enabled": true,
+    "emmet.includeLanguages": {
+    "aspnetcorerazor": "html"
+}
 }
