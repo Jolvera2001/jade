@@ -1,47 +1,39 @@
 ﻿@page "/"
 @inject IJSRuntime JS
+@using BlazorMonaco
+@using BlazorMonaco.Editor
+@using BlazorMonaco.Languages
 
-<main class="container">
-    <div class="editor">
-        <textarea 
-            @bind="_text"
-            @bind:event="oninput" 
-            @onkeydown="HandleKeyDown" 
-            id="editor-textarea" />
-        <p>@_text</p>
-    </div>
+<main class="h-screen w-screen">
+        <StandaloneCodeEditor 
+            @ref="_editor"
+            ConstructionOptions="StandaloneEditorConstructionOptions"
+            CssClass="h-full w-full" />
 </main>
-
+    
 @code
 {
     private string _text = "";
-
-    private void HandleInput(ChangeEventArgs e) 
+    private StandaloneCodeEditor? _editor;
+    private StandaloneEditorConstructionOptions StandaloneEditorConstructionOptions(StandaloneCodeEditor editor) 
     {
-        _text = e.Value?.ToString() ?? "";
+        return new StandaloneEditorConstructionOptions 
+        {
+            AutomaticLayout = true,
+            Language = "plaintext",
+            Theme = "vs-dark",
+            ScrollBeyondLastLine = false,
+            LineNumbers = "on",
+            RenderWhitespace = "all",
+            Value = _text,
+        };
     }
 
-    private void HandleKeyDown(KeyboardEventArgs args) 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (args.Key == "Tab")
+        if (firstRender && _editor != null)
         {
-            _text += "    ";
-        }
-
-        StateHasChanged();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender) 
-    {
-        if (firstRender)
-        {
-            await JS.InvokeVoidAsync("eval", @"
-                document.getElementById('editor-textarea').addEventListener('keydown', function(e) {
-                    if (e.key === 'Tab') {
-                        e.preventDefault();
-                    }
-                });
-            ");
+            await _editor.Layout();
         }
     }
 }
