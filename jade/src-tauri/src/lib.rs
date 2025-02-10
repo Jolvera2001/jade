@@ -1,7 +1,7 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 mod piece_table;
 
-use piece_table::update_content;
+use piece_table::{test_call, update_content};
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -12,7 +12,7 @@ fn greet(name: &str) -> String {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![greet, update_content])
+        .invoke_handler(tauri::generate_handler![greet, update_content, test_call])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

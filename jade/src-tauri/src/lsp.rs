@@ -1,0 +1,3 @@
+struct LspServer {
+    process: Child
+}

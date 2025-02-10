@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject IJSRuntime Js
+@using Pages
 @using BlazorMonaco
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
@@ -59,7 +60,11 @@
             {
                 foreach(var change in e.Changes)
                 {
-                    await Js.InvokeAsync<string>("__TAURI__.core.invoke", "update_content", change);
+                    await Js.InvokeAsync<string>(
+                        "window.__TAURI__.core.invoke", 
+                        "update_content", 
+                        change
+                    );
                 }
             }
             catch (Exception ex)
@@ -77,5 +82,4 @@
         }
     }
 }
-using System.Runtime.InteropServices;
-#line default
+
