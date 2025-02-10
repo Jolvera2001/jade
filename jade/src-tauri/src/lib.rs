@@ -1,5 +1,6 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 mod piece_table;
+mod lsp;
 
 use piece_table::{test_call, update_content};
 
